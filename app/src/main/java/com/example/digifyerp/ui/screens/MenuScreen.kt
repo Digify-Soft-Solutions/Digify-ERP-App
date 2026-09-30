@@ -32,13 +32,13 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.PointOfSale
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Store
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -64,6 +64,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.digifyerp.R
+import com.example.digifyerp.model.Transaction
 import com.example.digifyerp.theme.DealBannerBg
 import com.example.digifyerp.theme.DesktopBannerBg
 import com.example.digifyerp.theme.DigifyBackground
@@ -72,9 +73,18 @@ import com.example.digifyerp.theme.DigifyRed
 import com.example.digifyerp.theme.TextMuted
 import com.example.digifyerp.theme.TextPrimary
 import com.example.digifyerp.theme.TextSecondary
+import com.example.digifyerp.ui.components.BankAccountsDialog
+import com.example.digifyerp.ui.components.CashInHandDialog
+import com.example.digifyerp.ui.components.ExpensesDialog
+import com.example.digifyerp.ui.components.OnlineStoreDialog
+import com.example.digifyerp.ui.components.PurchaseBillsDialog
+import com.example.digifyerp.ui.components.SaleInvoicesDialog
+import com.example.digifyerp.ui.components.ThermalReceiptDialog
 
 @Composable
 fun MenuScreen(
+    transactions: List<Transaction> = emptyList(),
+    storeName: String = "Gautam malik",
     onNavigateToDesktop: () -> Unit = {},
     onOpenReports: () -> Unit = {},
     onOpenSettings: () -> Unit = {},
@@ -88,6 +98,14 @@ fun MenuScreen(
     var isPurchaseExpanded by remember { mutableStateOf(false) }
     var isGrowExpanded by remember { mutableStateOf(false) }
     var isSupportExpanded by remember { mutableStateOf(false) }
+
+    var showOnlineStoreDialog by remember { mutableStateOf(false) }
+    var showExpensesDialog by remember { mutableStateOf(false) }
+    var showPurchaseBillsDialog by remember { mutableStateOf(false) }
+    var showSaleInvoicesDialog by remember { mutableStateOf(false) }
+    var showBankAccountsDialog by remember { mutableStateOf(false) }
+    var showCashInHandDialog by remember { mutableStateOf(false) }
+    var selectedReceiptTxn by remember { mutableStateOf<Transaction?>(null) }
 
     Box(modifier = modifier.fillMaxSize().background(DigifyBackground)) {
         LazyColumn(
@@ -271,12 +289,12 @@ fun MenuScreen(
                                     .background(Color(0xFFF8FAFC))
                                     .padding(start = 56.dp, top = 6.dp, bottom = 6.dp, end = 16.dp)
                             ) {
-                                SubMenuItem("Sale Invoices") { Toast.makeText(context, "Sale Invoices", Toast.LENGTH_SHORT).show() }
-                                SubMenuItem("Estimate / Quotation") { Toast.makeText(context, "Estimate / Quotation", Toast.LENGTH_SHORT).show() }
-                                SubMenuItem("Payment In") { Toast.makeText(context, "Payment In", Toast.LENGTH_SHORT).show() }
-                                SubMenuItem("Sale Order") { Toast.makeText(context, "Sale Order", Toast.LENGTH_SHORT).show() }
-                                SubMenuItem("Delivery Challan") { Toast.makeText(context, "Delivery Challan", Toast.LENGTH_SHORT).show() }
-                                SubMenuItem("Sale Return / Credit Note") { Toast.makeText(context, "Sale Return", Toast.LENGTH_SHORT).show() }
+                                SubMenuItem("Sale Invoices") { showSaleInvoicesDialog = true }
+                                SubMenuItem("Estimate / Quotation") { showSaleInvoicesDialog = true }
+                                SubMenuItem("Payment In") { showSaleInvoicesDialog = true }
+                                SubMenuItem("Sale Order") { showSaleInvoicesDialog = true }
+                                SubMenuItem("Delivery Challan") { showSaleInvoicesDialog = true }
+                                SubMenuItem("Sale Return / Credit Note") { showSaleInvoicesDialog = true }
                             }
                         }
 
@@ -296,10 +314,10 @@ fun MenuScreen(
                                     .background(Color(0xFFF8FAFC))
                                     .padding(start = 56.dp, top = 6.dp, bottom = 6.dp, end = 16.dp)
                             ) {
-                                SubMenuItem("Purchase Bills") { Toast.makeText(context, "Purchase Bills", Toast.LENGTH_SHORT).show() }
-                                SubMenuItem("Payment Out") { Toast.makeText(context, "Payment Out", Toast.LENGTH_SHORT).show() }
-                                SubMenuItem("Purchase Order") { Toast.makeText(context, "Purchase Order", Toast.LENGTH_SHORT).show() }
-                                SubMenuItem("Purchase Return / Debit Note") { Toast.makeText(context, "Purchase Return", Toast.LENGTH_SHORT).show() }
+                                SubMenuItem("Purchase Bills") { showPurchaseBillsDialog = true }
+                                SubMenuItem("Payment Out") { showPurchaseBillsDialog = true }
+                                SubMenuItem("Purchase Order") { showPurchaseBillsDialog = true }
+                                SubMenuItem("Purchase Return / Debit Note") { showPurchaseBillsDialog = true }
                             }
                         }
 
@@ -309,7 +327,7 @@ fun MenuScreen(
                         MenuLinkItem(
                             icon = Icons.Default.Receipt,
                             title = "Expenses",
-                            onClick = { Toast.makeText(context, "Expenses Module", Toast.LENGTH_SHORT).show() }
+                            onClick = { showExpensesDialog = true }
                         )
 
                         HorizontalDivider(color = Color(0xFFF1F5F9))
@@ -318,7 +336,7 @@ fun MenuScreen(
                         MenuLinkItem(
                             icon = Icons.Default.Store,
                             title = "My Online Store",
-                            onClick = { Toast.makeText(context, "Online Store: digifysoft.in/store", Toast.LENGTH_SHORT).show() }
+                            onClick = { showOnlineStoreDialog = true }
                         )
 
                         HorizontalDivider(color = Color(0xFFF1F5F9))
@@ -359,7 +377,7 @@ fun MenuScreen(
                         MenuLinkItem(
                             icon = Icons.Default.AccountBalance,
                             title = "Bank Accounts",
-                            onClick = { Toast.makeText(context, "Bank Accounts", Toast.LENGTH_SHORT).show() }
+                            onClick = { showBankAccountsDialog = true }
                         )
 
                         HorizontalDivider(color = Color(0xFFF1F5F9))
@@ -367,7 +385,7 @@ fun MenuScreen(
                         MenuLinkItem(
                             icon = Icons.Default.Payments,
                             title = "Cash In-Hand",
-                            onClick = { Toast.makeText(context, "Cash In-Hand Ledger", Toast.LENGTH_SHORT).show() }
+                            onClick = { showCashInHandDialog = true }
                         )
                     }
                 }
@@ -387,7 +405,7 @@ fun MenuScreen(
                 ) {
                     Column(modifier = Modifier.padding(vertical = 12.dp)) {
                         MenuExpandableItem(
-                            icon = Icons.Default.TrendingUp,
+                            icon = Icons.AutoMirrored.Filled.TrendingUp,
                             title = "Grow Your Business",
                             isExpanded = isGrowExpanded,
                             onToggle = { isGrowExpanded = !isGrowExpanded }
@@ -568,6 +586,53 @@ fun MenuScreen(
                     )
                 }
             }
+        }
+
+        // Interactive Dialogs for Menu items
+        if (showOnlineStoreDialog) {
+            OnlineStoreDialog(
+                storeName = storeName,
+                onDismiss = { showOnlineStoreDialog = false }
+            )
+        }
+
+        if (showExpensesDialog) {
+            ExpensesDialog(
+                onDismiss = { showExpensesDialog = false }
+            )
+        }
+
+        if (showPurchaseBillsDialog) {
+            PurchaseBillsDialog(
+                onDismiss = { showPurchaseBillsDialog = false }
+            )
+        }
+
+        if (showSaleInvoicesDialog) {
+            SaleInvoicesDialog(
+                transactions = transactions,
+                onPrintReceipt = { selectedReceiptTxn = it },
+                onDismiss = { showSaleInvoicesDialog = false }
+            )
+        }
+
+        if (showBankAccountsDialog) {
+            BankAccountsDialog(
+                onDismiss = { showBankAccountsDialog = false }
+            )
+        }
+
+        if (showCashInHandDialog) {
+            CashInHandDialog(
+                onDismiss = { showCashInHandDialog = false }
+            )
+        }
+
+        selectedReceiptTxn?.let { txn ->
+            ThermalReceiptDialog(
+                transaction = txn,
+                onDismiss = { selectedReceiptTxn = null }
+            )
         }
     }
 }

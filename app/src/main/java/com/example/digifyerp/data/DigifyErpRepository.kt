@@ -290,6 +290,21 @@ class DigifyErpRepository {
         _items.update { current -> listOf(newItem) + current }
     }
 
+    fun deleteItem(itemId: String) {
+        _items.update { current -> current.filter { it.id != itemId } }
+    }
+
+    fun adjustItemStock(itemId: String, delta: Double) {
+        _items.update { current ->
+            current.map { item ->
+                if (item.id == itemId) {
+                    val newStock = (item.currentStock + delta).coerceAtLeast(0.0)
+                    item.copy(currentStock = newStock)
+                } else item
+            }
+        }
+    }
+
     private fun recalculateStats() {
         val totalSale = _transactions.value.filter { it.type == TransactionType.SALE }.sumOf { it.totalAmount }
         val youllGet = _parties.value.filter { it.balanceType == BalanceType.YOU_WILL_GET }.sumOf { it.balanceAmount }

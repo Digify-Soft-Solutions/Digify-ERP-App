@@ -127,12 +127,20 @@ fun MainScreen(
                         onAddItem = { name, salePrice, purchasePrice, stock, unit ->
                             repository.addItem(name, salePrice, purchasePrice, stock, unit)
                             Toast.makeText(context, "Item '$name' added to Digify Inventory!", Toast.LENGTH_SHORT).show()
+                        },
+                        onDeleteItem = { itemId ->
+                            repository.deleteItem(itemId)
+                        },
+                        onAdjustStock = { itemId, delta ->
+                            repository.adjustItemStock(itemId, delta)
                         }
                     )
                 }
 
                 AppTab.MENU -> {
                     MenuScreen(
+                        transactions = transactions,
+                        storeName = storeName,
                         onNavigateToDesktop = { currentTab = AppTab.GET_DESKTOP },
                         onOpenReports = { showReportsDialog = true },
                         onOpenSettings = { showSettingsDialog = true },
